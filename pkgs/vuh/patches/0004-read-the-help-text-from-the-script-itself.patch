@@ -1,0 +1,16 @@
+diff --git a/vuh.sh b/vuh.sh
+index b4a8357..34bc207 100755
+--- a/vuh.sh
++++ b/vuh.sh
+@@ -1362,7 +1362,10 @@ function check_available_updates() {
+ }
+ 
+ function show_help() {
+-  grep '^#/' <"$0" | cut -c4-
++  # $0 is whatever the caller used to start vuh; it is not necessarily the file
++  # the help text lives in (shell wrappers, `exec -a`, symlinks, `bash vuh`).
++  # ${BASH_SOURCE[0]} always is.
++  grep '^#/' <"${BASH_SOURCE[0]}" | cut -c4-
+ }
+ 
+ 

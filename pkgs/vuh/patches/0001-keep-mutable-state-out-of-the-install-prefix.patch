@@ -1,0 +1,30 @@
+diff --git a/vuh.sh b/vuh.sh
+index d4e6f44..4bddcf9 100755
+--- a/vuh.sh
++++ b/vuh.sh
+@@ -212,6 +212,12 @@ VUH_VERSION='2.15.0'
+ # Installation variables (Please don't modify!)
+ DATA_DIR='<should_be_replace_after_installation:DATA_DIR>'
+ 
++# Directory for everything vuh has to write at runtime.
++# DATA_DIR describes the installation itself and may live in a read-only prefix
++# (that is the case for Nix, Guix and any other immutable packaging), so runtime
++# state is kept separately and follows the XDG Base Directory specification.
++VUH_STATE_DIR="${VUH_STATE_DIR:-${XDG_STATE_HOME:-${HOME:-/tmp}/.local/state}/vuh}"
++
+ # Variables for auto updates checking
+ OFFICIAL_REPO='Greewil/version-update-helper'
+ OFFICIAL_REPO_FULL="https://github.com/$OFFICIAL_REPO"
+@@ -1020,7 +1026,11 @@ function _regular_check_available_updates() {
+ 
+   cur_date=$(date +%Y-%j)
+   last_update_check='0-0' # dates like: 'date +%Y-%j' (f.e. 2022-213)
+-  update_info_file="$DATA_DIR/latest_update_check"
++  update_info_file="$VUH_STATE_DIR/latest_update_check"
++  mkdir -p "$VUH_STATE_DIR" || {
++    _show_warning_message "Failed to create vuh state directory ($VUH_STATE_DIR)!"
++    return 1
++  }
+   if [[ -d "$update_info_file" ]] || [[ -s "$update_info_file" ]]; then
+     last_update_check=$(<"$update_info_file")
+   else

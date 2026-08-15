@@ -1,0 +1,13 @@
+diff --git a/vuh.sh b/vuh.sh
+index 34bc207..5a244ba 100755
+--- a/vuh.sh
++++ b/vuh.sh
+@@ -413,7 +413,7 @@ function _use_module_configuration() {
+   eval TEXT_AFTER_VERSION_CODE='$'"$next_handling_module"'_TEXT_AFTER_VERSION_CODE'
+   eval MODULE_ROOT_PATH='$'"$next_handling_module"'_MODULE_ROOT_PATH'
+   eval IS_INCREMENT_REQUIRED_ONLY_ON_CHANGES='$'"$next_handling_module"'_IS_INCREMENT_REQUIRED_ONLY_ON_CHANGES'
+-  for var in $(compgen -v | grep "$next_handling_module\_.*_CHANGING_LOCATIONS"); do
++  for var in $(compgen -v | grep "$next_handling_module""_.*_CHANGING_LOCATIONS"); do
+     global_var_name=${var##*"$next_handling_module"\_}
+     global_var_value=''
+     eval global_var_value='$'"$var"

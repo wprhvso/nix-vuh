@@ -1,0 +1,18 @@
+#compdef vuh
+# zsh completion for vuh.
+#
+# Upstream only ships a bash completion script, so run that one through zsh's
+# bashcompinit compatibility layer instead of maintaining a second, always
+# slightly out-of-date, list of commands and flags.
+
+autoload -Uz bashcompinit && bashcompinit
+
+# Sourcing the bash script ends in `complete -F _vuh_completion vuh`, which
+# bashcompinit turns into `compdef "_bash_complete -F _vuh_completion" vuh`.
+# That only takes effect from the *next* completion attempt onwards, so hand the
+# current one over explicitly.
+source '@bashCompletion@'
+
+if (( $+functions[_bash_complete] )); then
+  _bash_complete '-F' '_vuh_completion'
+fi

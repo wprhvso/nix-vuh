@@ -1,0 +1,17 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+# Patches are byte-exact; do not let an editor "fix" them.
+[*.patch]
+insert_final_newline = false
+trim_trailing_whitespace = false
