@@ -1,0 +1,63 @@
+diff --git a/vuh.sh b/vuh.sh
+index 4bddcf9..633c241 100755
+--- a/vuh.sh
++++ b/vuh.sh
+@@ -211,6 +211,10 @@ VUH_VERSION='2.15.0'
+ 
+ # Installation variables (Please don't modify!)
+ DATA_DIR='<should_be_replace_after_installation:DATA_DIR>'
++# Whether vuh is allowed to talk to github to look for newer releases.
++# Package managers that own the vuh binary set this to 'false': they update vuh
++# themselves and vuh must not reach out to the network behind their back.
++UPDATE_CHECKS='<should_be_replace_after_installation:UPDATE_CHECKS>'
+ 
+ # Directory for everything vuh has to write at runtime.
+ # DATA_DIR describes the installation itself and may live in a read-only prefix
+@@ -982,31 +986,14 @@ function _get_latest_available_vuh_version() {
+   AVAILABLE_VERSION=$(_get_version_from_file "$vuh_version_file") || return 1
+ }
+ 
+-function _check_auto_update_logs() {
+-  update_log_file=$1
+-  logs=$(<"$update_log_file")
+-  [[ "$logs" == *'was successfully installed'* ]] || _show_error_message 'Failed to install update!'
+-  [[ "$logs" == *'ermission denied'* ]] && _show_error_message "Permission denied so try 'sudo vuh --update' to start update!"
+-}
+-
+ function _install_latest_vuh_version() {
+-  _show_function_title 'Installing latest vuh version ...'
+-  auto_updater_path="$OFFICIAL_REPO/$main_vuh_branch/auto_update.sh"
+-  vuh_auto_updater_file=$(curl -s "https://raw.githubusercontent.com/$auto_updater_path") || {
+-    _show_error_message "Failed to download vuh updater!"
+-    exit 1
+-  }
+-  update_log_file='/tmp/vuh_update_log.txt'
+-  echo '' > "$update_log_file"
+-  eval "$vuh_auto_updater_file" |& tee /dev/fd/3 3>&1 1>>${update_log_file} 2>&1
+-  _check_auto_update_logs "$update_log_file" || {
+-    rm "$update_log_file"
+-    exit 1
+-  }
+-  rm "$update_log_file"
++  _show_error_message 'vuh was installed by a package manager and can not update itself!'
++  _show_error_message 'Please update vuh the same way you installed it.'
++  exit 1
+ }
+ 
+ function _regular_check_available_updates() {
++  [ "$UPDATE_CHECKS" = 'true' ] || return 0
+   configuration_file="$DATA_DIR/.installation_info"
+   if [[ ! -f "$configuration_file" ]]; then
+     _show_warning_message "vuh wasn't installed properly!"
+@@ -1345,6 +1332,11 @@ function show_vuh_configuration() {
+ }
+ 
+ function check_available_updates() {
++  if [ "$UPDATE_CHECKS" != 'true' ]; then
++    _show_error_message 'Update checks are disabled in this build of vuh!'
++    _show_error_message 'vuh was installed by a package manager, so please update it the same way.'
++    exit 1
++  fi
+   _get_latest_available_vuh_version || {
+     _show_error_message "Failed to get latest available version from $OFFICIAL_REPO_FULL repository!"
+     exit 1

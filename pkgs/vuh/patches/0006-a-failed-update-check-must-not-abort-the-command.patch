@@ -1,0 +1,15 @@
+diff --git a/vuh.sh b/vuh.sh
+index 5a244ba..6f499e6 100755
+--- a/vuh.sh
++++ b/vuh.sh
+@@ -1037,8 +1037,9 @@ function _regular_check_available_updates() {
+     echo "$cur_date" > "$update_info_file"
+     _get_latest_available_vuh_version || {
+       _show_warning_message "Failed to get latest available version from $OFFICIAL_REPO_FULL repository!"
++      return 0
+     }
+-    largest_version=$(_get_largest_version "$VUH_VERSION" "$AVAILABLE_VERSION") || exit 1
++    largest_version=$(_get_largest_version "$VUH_VERSION" "$AVAILABLE_VERSION") || return 0
+     if [[ "$largest_version" != "$VUH_VERSION" ]] && [[ "$largest_version" != "=" ]]; then
+       _show_info_message "your current vuh version: $VUH_VERSION"
+       _show_info_message "latest vuh available version: $AVAILABLE_VERSION"

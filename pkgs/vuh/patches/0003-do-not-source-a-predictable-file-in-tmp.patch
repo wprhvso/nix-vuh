@@ -1,0 +1,34 @@
+diff --git a/vuh.sh b/vuh.sh
+index 633c241..b4a8357 100755
+--- a/vuh.sh
++++ b/vuh.sh
+@@ -456,14 +456,24 @@ function _use_module_configuration_if_it_exists() {
+ # $1 - Text of handling configuration file
+ function _load_project_variables_from_config() {
+   config_file=$1
+-  tmp_conf_file="/tmp/${APP_NAME}_projects_conf_file"
+-  echo "$config_file" > $tmp_conf_file
++  # The configuration is sourced, so it must never be read back from a path an
++  # unprivileged user can pre-create (a symlink there would be enough to run
++  # arbitrary code as whoever calls vuh). It also has to be unique: vuh calls
++  # itself recursively when several project modules are handled at once.
++  tmp_conf_file=$(mktemp -t "${APP_NAME}_projects_conf_file.XXXXXXXXXX") || {
++    _show_error_message 'Failed to create temporary file for project configuration!'
++    return 1
++  }
++  echo "$config_file" > "$tmp_conf_file" || {
++    rm -f "$tmp_conf_file"
++    return 1
++  }
+   # shellcheck source=/dev/null
+-  . $tmp_conf_file || {
+-    rm -f "/tmp/${APP_NAME}_projects_conf_file"
++  . "$tmp_conf_file" || {
++    rm -f "$tmp_conf_file"
+     return 1
+   }
+-  rm -f "/tmp/${APP_NAME}_projects_conf_file"
++  rm -f "$tmp_conf_file"
+ }
+ 
+ function _use_current_project_module() {
