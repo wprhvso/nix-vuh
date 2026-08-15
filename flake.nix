@@ -8,10 +8,11 @@
     let
       inherit (nixpkgs) lib;
 
+      # No x86_64-darwin: nixpkgs dropped it in 26.11, and `nix flake show`
+      # evaluates every system listed here, so naming it fails outright.
       systems = [
         "x86_64-linux"
         "aarch64-linux"
-        "x86_64-darwin"
         "aarch64-darwin"
       ];
 
